@@ -1,6 +1,7 @@
 <script>
 	import FormCard from '$lib/components/FormCard.svelte';
 	import ProgressBar from '$lib/components/ProgressBar.svelte';
+	import QuestionRadioForm from '$lib/components/QuestionRadioForm.svelte';
 	import {
 		House,
 		LandPlot,
@@ -96,17 +97,19 @@
 	}
 </script>
 
-<div class="flex flex-col gap-4 justify-center items-center w-full mx-auto">
-	<h2 class=" font-bold">Let's Rock!</h2>
-	<div class="flex-grow w-full max-w-md">
-		<ProgressBar currentStep={1} />
+<div class="flex flex-col gap-4 justify-center items-center w-full mx-auto relative p-4">
+	<div class=" absolute top-0 w-full bg-white z-10 sticky py-2">
+		<h2 class=" font-bold">Let's Rock!</h2>
+		<div class="flex-grow w-full max-w-md">
+			<ProgressBar currentStep={1} />
+		</div>
 	</div>
 	<!-- Scrollable container -->
 	<div
 		bind:this={scrollContainer}
-		class="max-w-[480px] mx-auto h-screen overflow-y-auto flex flex-col gap-[3rem] "
+		class="w-full mx-auto h-screen overflow-y-auto flex flex-col gap-[3rem] "
 	>
-		<FormCard
+		<QuestionRadioForm
 			question="What are you looking for?"
 			description="Get started by letting us know a little bit about what you need"
 			options={homeLoanOptions}
@@ -117,7 +120,7 @@
 			<!-- Anchor with margin to scroll past the first question -->
 			<div bind:this={secondQuestionAnchor} class="h-0 mt-[-1rem]"></div>
 
-			<FormCard
+			<QuestionRadioForm
 				question="What type of loan are you planning?"
 				description="It will help us to identify your requirements, specifically"
 				options={typeOfLoanOptions}
