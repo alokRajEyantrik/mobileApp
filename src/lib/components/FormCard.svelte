@@ -17,14 +17,12 @@
 	export let description: string;
 	export let options: Option[] = [];
 	export let selectedOption: string | null = null;
-
-
 </script>
 
 <div class="flex flex-col gap-4 justify-center items-center w-full mx-auto">
-	<h2 class=" font-bold">{pageTitle}</h2>
+	<!-- <h2 class=" font-bold">{pageTitle}</h2>
 	<div class="flex-grow w-full max-w-md">
 		<ProgressBar currentStep={step} />
-	</div>
+	</div> -->
 	<QuestionRadioForm {question} {description} {options} bind:selectedOption />
 </div>
