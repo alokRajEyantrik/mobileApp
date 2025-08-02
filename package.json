@@ -14,7 +14,9 @@
 		"lint": "prettier --check ."
 	},
 	"devDependencies": {
+		"@capacitor/cli": "^7.4.2",
 		"@sveltejs/adapter-auto": "^6.0.0",
+		"@sveltejs/adapter-static": "^3.0.8",
 		"@sveltejs/kit": "^2.22.0",
 		"@sveltejs/vite-plugin-svelte": "^6.0.0",
 		"autoprefixer": "^10.4.21",
@@ -28,6 +30,10 @@
 		"vite": "^7.0.4"
 	},
 	"dependencies": {
-		"@lucide/svelte": "^0.535.0"
+		"@capacitor/android": "^7.4.2",
+		"@capacitor/core": "^7.4.2",
+		"@capacitor/ios": "^7.4.2",
+		"@lucide/svelte": "^0.535.0",
+		"json-logic-js": "^2.0.5"
 	}
 }
