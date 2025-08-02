@@ -7,7 +7,6 @@
 	export let showValue: string = ''; // optional fallback
 	export let customLabel: string = ''; // NEW — display label instead of groupValue if provided
 	export let groupId: string;
-	export let emoji: string = '';
 	export let onClick = () => {};
 	export let onChange = () => {};
 	export let className = '';
