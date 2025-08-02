@@ -1,15 +1,16 @@
 <script lang="ts">
-	// import { House  } from '@lucide/svelte';
-	export let Icon: typeof import('svelte').SvelteComponent | null = null;
+	import type { SvelteComponent } from 'svelte';
+
+	export let Icon: typeof SvelteComponent | null = null;
 	export let groupVal: string | null = null;
 	export let groupName: string;
 	export let groupValue: string;
-	export let showValue: string = ''; // optional fallback
-	export let customLabel: string = ''; // NEW — display label instead of groupValue if provided
+	export let showValue: string = ''; // fallback label
+	export let customLabel: string = ''; // primary label
 	export let groupId: string;
-	export let onClick = () => {};
-	export let onChange = () => {};
-	export let className = '';
+	export let onClick: (e: Event) => void = () => {};
+	export let onChange: (e: Event) => void = () => {};
+	export let className: string = '';
 
 	function handleClick(event: Event) {
 		if (!groupVal || groupVal !== groupValue) {
@@ -23,7 +24,13 @@
 <div class="flex w-full items-center">
 	<label
 		for={groupId}
-		class={`relative cursor-pointer font-normal text-sm flex border px-4 w-full py-[0.8rem] rounded-md border-iconColor items-center ${className}`}
+		class={`relative cursor-pointer text-sm flex border w-full px-4 py-[0.8rem] rounded-md items-center gap-2
+			border-iconColor transition-colors duration-200
+			hover:border-black 
+			[&:has(input:checked)]:bg-black
+			[&:has(input:checked)]:text-white 
+			[&:has(input:checked)]:border-[#fcb650]
+			${className}`}
 	>
 		<input
 			type="radio"
@@ -36,20 +43,10 @@
 			on:change={onChange}
 		/>
 
-		<div class="flex items-center">
-			{#if Icon}
-				<svelte:component this={Icon} />
-			{/if}
+		{#if Icon}
+			<svelte:component this={Icon} class="w-5 h-5" />
+		{/if}
 
-			<span class="ml-2">{@html renderLabel}</span>
-		</div>
+		<span>{@html renderLabel}</span>
 	</label>
 </div>
-
-<style>
-	label:has(input:checked) {
-		background-color: black;
-		color: white;
-		border: 2px solid #fcb650;
-	}
-</style>

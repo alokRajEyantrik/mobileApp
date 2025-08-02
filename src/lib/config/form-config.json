@@ -12,37 +12,14 @@
 				"contextKey": "loanName",
 				"type": "radio",
 				"required": true,
-				"uiMeta": {
-					"placeholder": "Select loan name"
-				},
 				"question": "What are you looking for?",
-				"info": "Get started by letting us know a little bit about what you need",
-				"whyAsked": "why asked",
 				"options": [
-					{
-						"label": "Home Loan",
-						"value": "Home Loan"
-					},
-					{
-						"label": "Plot Loan",
-						"value": "Plot Loan"
-					},
-					{
-						"label": "Loan Against Property (LAP)",
-						"value": "Loan Against Property"
-					},
-					{
-						"label": "Business Loan",
-						"value": "Business Loan"
-					},
-					{
-						"label": "Professional Loan",
-						"value": "Professional Loan"
-					},
-					{
-						"label": "Personal Loan",
-						"value": "Personal Loan"
-					}
+					{ "label": "Home Loan", "value": "Home Loan" },
+					{ "label": "Plot Loan", "value": "Plot Loan" },
+					{ "label": "Loan Against Property (LAP)", "value": "Loan Against Property" },
+					{ "label": "Business Loan", "value": "Business Loan" },
+					{ "label": "Professional Loan", "value": "Professional Loan" },
+					{ "label": "Personal Loan", "value": "Personal Loan" }
 				]
 			},
 			{
@@ -51,60 +28,27 @@
 				"contextKey": "productType",
 				"type": "radio",
 				"required": true,
-				"uiMeta": {
-					"placeholder": "Select product type"
-				},
 				"question": "Please choose any one.",
-				"info": "It will help us to identify your requirements, specifically",
-				"whyAsked": "why asked",
 				"options": [
 					{
 						"label": "LAP",
 						"value": "LAP",
-						"showWhen": {
-							"==": [
-								{
-									"var": "loan_name"
-								},
-								"Loan Against Property"
-							]
-						}
+						"showWhen": { "==": [{ "var": "loan_name" }, "Loan Against Property"] }
 					},
 					{
 						"label": "Drop-line Overdraft (DOD)",
 						"value": "Drop-line OverDraft (DOD)",
-						"showWhen": {
-							"==": [
-								{
-									"var": "loan_name"
-								},
-								"Loan Against Property"
-							]
-						}
+						"showWhen": { "==": [{ "var": "loan_name" }, "Loan Against Property"] }
 					},
 					{
 						"label": "New Loan",
 						"value": "New Loan",
-						"showWhen": {
-							"==": [
-								{
-									"var": "loan_name"
-								},
-								"Plot Loan"
-							]
-						}
+						"showWhen": { "==": [{ "var": "loan_name" }, "Plot Loan"] }
 					},
 					{
 						"label": "Balance Transfer Only",
 						"value": "Balance Transfer Only",
-						"showWhen": {
-							"==": [
-								{
-									"var": "loan_name"
-								},
-								"Plot Loan"
-							]
-						}
+						"showWhen": { "==": [{ "var": "loan_name" }, "Plot Loan"] }
 					}
 				],
 				"showWhen": {
@@ -112,409 +56,39 @@
 				}
 			},
 			{
-				"id": "loan_type",
-				"bindsTo": "{{loanType}}",
-				"contextKey": "loanType",
+				"id": "loan_type_home",
+				"bindsTo": "{{loanType_HL}}",
+				"contextKey": "loanType_HL",
 				"type": "radio",
 				"required": true,
-				"uiMeta": {
-					"placeholder": "Select loan type"
-				},
-				"question": "What type of loan are you planning?",
-				"info": "It will help us to identify your requirements, specifically",
-				"whyAsked": "why asked",
+				"question": "What type of Home Loan are you planning?",
 				"options": [
-					{
-						"label": "New Loan",
-						"value": "New Loan",
-						"showWhen": {
-							"or": [
-								{
-									"and": [
-										{
-											"==": [
-												{
-													"var": "loan_name"
-												},
-												"Loan Against Property"
-											]
-										},
-										{
-											"in": [{ "var": "product_type" }, ["LAP", "Drop-line OverDraft (DOD)"]]
-										}
-									]
-								},
-								{
-									"==": [
-										{
-											"var": "loan_name"
-										},
-										"Home Loan"
-									]
-								}
-							]
-						}
-					},
-					{
-						"label": "Balance Transfer With Top-up",
-						"value": "Balance Transfer With Top-up",
-						"showWhen": {
-							"or": [
-								{
-									"and": [
-										{
-											"==": [
-												{
-													"var": "loan_name"
-												},
-												"Loan Against Property"
-											]
-										},
-										{
-											"in": [{ "var": "product_type" }, ["LAP", "Drop-line OverDraft (DOD)"]]
-										}
-									]
-								},
-								{
-									"==": [
-										{
-											"var": "loan_name"
-										},
-										"Home Loan"
-									]
-								}
-							]
-						}
-					},
-					{
-						"label": "Balance Transfer Only",
-						"value": "Balance Transfer Only",
-						"showWhen": {
-							"or": [
-								{
-									"==": [
-										{
-											"var": "product_type"
-										},
-										"LAP"
-									]
-								},
-								{
-									"==": [
-										{
-											"var": "loan_name"
-										},
-										"Home Loan"
-									]
-								}
-							]
-						}
-					},
-					{
-						"label": "Top-up Only",
-						"value": "Top-up Only",
-						"showWhen": {
-							"or": [
-								{
-									"==": [
-										{
-											"var": "product_type"
-										},
-										"LAP"
-									]
-								},
-								{
-									"==": [
-										{
-											"var": "loan_name"
-										},
-										"Home Loan"
-									]
-								}
-							]
-						}
-					},
-					{
-						"label": "Plot Loan Only",
-						"value": "Plot Loan Only",
-						"showWhen": {
-							"and": [
-								{
-									"==": [
-										{
-											"var": "loan_name"
-										},
-										"Plot Loan"
-									]
-								},
-								{
-									"==": [
-										{
-											"var": "product_type"
-										},
-										"New Loan"
-									]
-								}
-							]
-						}
-					},
-					{
-						"label": "Plot & Construction Loan",
-						"value": "Plot + Construction Loan",
-						"showWhen": {
-							"and": [
-								{
-									"==": [
-										{
-											"var": "loan_name"
-										},
-										"Plot Loan"
-									]
-								},
-								{
-									"==": [
-										{
-											"var": "product_type"
-										},
-										"New Loan"
-									]
-								}
-							]
-						}
-					},
-					{
-						"label": "Plot & Equity Loan",
-						"value": "Plot + Equity Loan",
-						"showWhen": {
-							"and": [
-								{
-									"==": [
-										{
-											"var": "loan_name"
-										},
-										"Plot Loan"
-									]
-								},
-								{
-									"==": [
-										{
-											"var": "product_type"
-										},
-										"New Loan"
-									]
-								}
-							]
-						}
-					},
-					{
-						"label": "Construction Loan Only",
-						"value": "Construction Loan Only",
-						"showWhen": {
-							"and": [
-								{
-									"==": [
-										{
-											"var": "loan_name"
-										},
-										"Plot Loan"
-									]
-								},
-								{
-									"==": [
-										{
-											"var": "product_type"
-										},
-										"New Loan"
-									]
-								}
-							]
-						}
-					}
+					{ "label": "New Loan", "value": "New Loan" },
+					{ "label": "Balance Transfer With Top-up", "value": "Balance Transfer With Top-up" },
+					{ "label": "Balance Transfer Only", "value": "Balance Transfer Only" },
+					{ "label": "Top-up Only", "value": "Top-up Only" }
 				],
 				"showWhen": {
-					"or": [
-						{
-							"and": [
-								{
-									"==": [
-										{
-											"var": "loan_name"
-										},
-										"Loan Against Property"
-									]
-								},
-								{
-									"in": [{ "var": "product_type" }, ["LAP", "Drop-line OverDraft (DOD)"]]
-								}
-							]
-						},
-						{
-							"==": [
-								{
-									"var": "loan_name"
-								},
-								"Home Loan"
-							]
-						},
-						{
-							"and": [
-								{
-									"==": [
-										{
-											"var": "loan_name"
-										},
-										"Plot Loan"
-									]
-								},
-								{
-									"==": [
-										{
-											"var": "product_type"
-										},
-										"New Loan"
-									]
-								}
-							]
-						}
-					]
+					"==": [{ "var": "loan_name" }, "Home Loan"]
 				}
 			},
 			{
-				"id": "unsecured_loan_type",
-				"bindsTo": "{{unsecuredLoanType}}",
-				"contextKey": "unsecuredLoanType",
+				"id": "loan_type_plot",
+				"bindsTo": "{{loanType_PL}}",
+				"contextKey": "loanType_PL",
 				"type": "radio",
 				"required": true,
-				"uiMeta": {
-					"placeholder": "Select loan type"
-				},
-				"question": "Select the form in which you want to avail this unsecured loan.",
-				"info": "This helps us identify the most suitable loan structure for you. For details, check our Drop-line Overdraft (DOD) Page.",
-				"whyAsked": "why asked",
+				"question": "What type of Plot Loan are you planning?",
 				"options": [
-					{
-						"label": "Business Loan",
-						"value": "Business Loan",
-						"showWhen": {
-							"==": [
-								{
-									"var": "loan_name"
-								},
-								"Business Loan"
-							]
-						}
-					},
-					{
-						"label": "Personal Loan",
-						"value": "Personal Loan",
-						"showWhen": {
-							"==": [
-								{
-									"var": "loan_name"
-								},
-								"Personal Loan"
-							]
-						}
-					},
-					{
-						"label": "Professional Loan",
-						"value": "Professional Loan",
-						"showWhen": {
-							"==": [
-								{
-									"var": "loan_name"
-								},
-								"Professional Loan"
-							]
-						}
-					},
-					{
-						"label": "Drop-line Overdraft (DOD)",
-						"value": "Drop-line OverDraft (DOD)"
-					}
+					{ "label": "Plot Loan Only", "value": "Plot Loan Only" },
+					{ "label": "Plot & Construction Loan", "value": "Plot + Construction Loan" },
+					{ "label": "Plot & Equity Loan", "value": "Plot + Equity Loan" },
+					{ "label": "Construction Loan Only", "value": "Construction Loan Only" }
 				],
 				"showWhen": {
-					"in": [{ "var": "loan_name" }, ["Business Loan", "Personal Loan", "Professional Loan"]]
-				}
-			},
-			{
-				"id": "existing_loan",
-				"bindsTo": "{{existingLoan}}",
-				"contextKey": "existingLoan",
-				"type": "radio",
-				"required": true,
-				"uiMeta": {
-					"placeholder": "Select loan type"
-				},
-				"question": "Do your business have any existing obligations?",
-				"info": "This includes all types of loans, limits on your company such as: any other Business loans, home loans, car loans, credit card loan (not monthly dues), gold loans, consumer durable loans, DOD, CC, ODs and any other ongoing liabilities.",
-				"whyAsked": "why asked",
-				"options": [
-					{
-						"label": "Yes",
-						"value": "Yes"
-					},
-					{
-						"label": "No",
-						"value": "No"
-					}
-				],
-				"showWhen": {
-					"or": [
-						{
-							"and": [
-								{
-									"==": [
-										{
-											"var": "loan_name"
-										},
-										"Business Loan"
-									]
-								},
-								{
-									"in": [
-										{ "var": "unsecured_loan_type" },
-										["Business Loan", "Drop-line OverDraft (DOD)"]
-									]
-								}
-							]
-						},
-						{
-							"and": [
-								{
-									"==": [
-										{
-											"var": "loan_name"
-										},
-										"Personal Loan"
-									]
-								},
-								{
-									"in": [
-										{ "var": "unsecured_loan_type" },
-										["Personal Loan", "Drop-line OverDraft (DOD)"]
-									]
-								}
-							]
-						},
-						{
-							"and": [
-								{
-									"==": [
-										{
-											"var": "loan_name"
-										},
-										"Professional Loan"
-									]
-								},
-								{
-									"in": [
-										{ "var": "unsecured_loan_type" },
-										["Professional Loan", "Drop-line OverDraft (DOD)"]
-									]
-								}
-							]
-						}
+					"and": [
+						{ "==": [{ "var": "loan_name" }, "Plot Loan"] },
+						{ "==": [{ "var": "product_type" }, "New Loan"] }
 					]
 				}
 			}

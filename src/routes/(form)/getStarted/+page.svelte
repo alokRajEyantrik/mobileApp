@@ -1,205 +1,101 @@
-<script>
-	import { fade, slide } from 'svelte/transition';
-	import { tick } from 'svelte';
-	import QuestionRadioForm from '$lib/components/QuestionRadioForm.svelte';
-	import formConfig from '$lib/config/form-config';
-	import {
-		House,
-		LandPlot,
-		HousePlus,
-		PersonStanding,
-		Factory,
-		Plus,
-		ArrowLeftRight,
-		BriefcaseBusiness
-	} from '@lucide/svelte';
-	import { currentStep, formData } from '$lib/stores/formStepper';
+<script lang="ts">
+	import { onMount, tick } from 'svelte';
 	import { get } from 'svelte/store';
-	import ProgressBar from '$lib/components/ProgressBar.svelte';
+	import { currentStep, formData } from '$lib/stores/formStepper';
+	import { visibleQuestions } from '$lib/stores/visibleQuestions';
+	import QuestionRadioForm from '$lib/components/QuestionRadioForm.svelte';
+	import { loadPipeline, updatePipelineValue } from '$lib/utils/updatePipeline';
 
-	let questions = [
-		{
-			question: 'What are you looking for?',
-			description: 'Let us know your loan requirement',
-			options: [
-				{
-					label: 'Home Loan',
-					value: 'Home Loan',
-					groupName: 'loanName',
-					groupId: 'HL',
-					Icon: House
-				},
-				{
-					label: 'Plot Loan Only',
-					value: 'Plot Loan Only',
-					groupName: 'loanName',
-					groupId: 'Plot',
-					Icon: LandPlot
-				},
-				{
-					label: 'Loan Against Property (LAP)',
-					value: 'Loan Against Property (LAP)',
-					groupName: 'loanName',
-					groupId: 'LAP',
-					Icon: HousePlus
-				},
-				{
-					label: 'Personal Loan',
-					value: 'Personal Loan',
-					groupName: 'loanName',
-					groupId: 'PL',
-					Icon: PersonStanding
-				},
-				{
-					label: 'Business Loan',
-					value: 'Business Loan',
-					groupName: 'loanName',
-					groupId: 'BL',
-					Icon: Factory
-				},
-				{
-					label: 'Professional Loan',
-					value: 'Professional Loan',
-					groupName: 'loanName',
-					groupId: 'ProfessionalLoan',
-					Icon: BriefcaseBusiness
-				}
-			],
-			key: 'loanName'
-		},
-		{
-			question: 'What type of loan are you planning?',
-			description: 'It will help us to identify your requirements, specifically',
-			options: [
-				{
-					label: 'New Loan',
-					value: 'New Loan',
-					groupName: 'loanType',
-					groupId: 'newLoan',
-					Icon: Plus
-				},
-				{
-					label: 'Balance Transfer Only',
-					value: 'Balance Transfer Only',
-					groupName: 'loanType',
-					groupId: 'balanceTransfer',
-					Icon: ArrowLeftRight
-				}
-			],
-			key: 'loanType'
-		}
-	];
+	let container: HTMLDivElement;
 
-	let direction = 'forward';
-	$: showNext = false;
+	async function scrollToTop() {
+		await tick();
+		container?.scrollTo({ top: 0, behavior: 'smooth' });
+	}
 
-	const nextStep = async () => {
+	async function nextStep() {
+		const $form = get(formData);
+		const $questions = get(visibleQuestions);
 		const step = get(currentStep);
-		const data = get(formData);
-		if (data[questions[step].key]) {
-			direction = 'forward';
-			if (step < questions.length - 1) {
-				currentStep.set(step + 1);
-				await tick();
-				scrollToTop();
-			}
-		}
-	};
 
-	const prevStep = async () => {
+		if (step >= $questions.length) {
+			console.warn('Reached end of questions');
+			return;
+		}
+
+		const currentQ = $questions[step];
+		const key = currentQ?.contextKey;
+
+		if (key && $form[key]) {
+			currentStep.set(step + 1);
+			await scrollToTop();
+		} else {
+			console.warn('Missing value for:', key, 'Current formData:', $form);
+		}
+	}
+
+	async function prevStep() {
 		const step = get(currentStep);
-		direction = 'backward';
 		if (step > 0) {
 			currentStep.set(step - 1);
-			await tick();
-			scrollToTop();
+			await scrollToTop();
 		}
-	};
-
-	let scrollContainer;
-	function scrollToTop() {
-		scrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
 	}
-
-	function fadeSlide(node, options) {
-		return {
-			delay: 0,
-			duration: 300,
-			css: (t, u) => {
-				const fadeStyle = fade(node, options).css(t, u);
-				const slideStyle = slide(node, options).css(t, u);
-				return `${fadeStyle}; ${slideStyle}`;
-			}
-		};
-	}
-
-	function handleScroll(event) {
-		const el = event.target;
-		const threshold = 50; // You can tweak this
-		const scrollBottom = el.scrollTop + el.clientHeight;
-		const totalHeight = el.scrollHeight;
-
-		showNext = scrollBottom + threshold >= totalHeight;
-	}
-
-	// $: console.log(formConfig, 'formConfig');
 </script>
 
-<div
-	class="h-screen w-full overflow-hidden flex flex-col items-center justify-center bg-gray-100 p-4"
->
-	<div class="flex justify-center">
-		<!-- {#if $currentStep > 0} -->
-		<button on:click={prevStep} class="px-4 py-2 bg-gray-300 text-black rounded"> Back </button>
-		<!-- {/if} -->
-		<h2 class=" font-bold">Let's Rock</h2>
-	</div>
-	<div class="flex-grow w-full max-w-md">
-		<ProgressBar currentStep={1} />
-	</div>
-	<div
-		bind:this={scrollContainer}
-		class="h-full w-full flex items-center justify-center overflow-auto"
-		on:scroll={handleScroll}
-	>
-		{#each questions as q, index}
-			{#if index === $currentStep}
-				<!-- Animate based on direction -->
-				<div in:fadeSlide={{ x: direction === 'forward' ? 50 : -50 }} class="w-full max-w-xl">
-					<div>
+<div class="h-screen w-full flex flex-col justify-between items-center bg-gray-100 p-4">
+	<!-- Question container -->
+	<div bind:this={container} class="flex-1 w-full flex justify-center items-center">
+		{#if $visibleQuestions.length > 0 && $currentStep < $visibleQuestions.length}
+			{#each $visibleQuestions as q, index}
+				{#if index === $currentStep}
+					<div class="w-full max-w-xl">
 						<QuestionRadioForm
 							question={q.question}
-							description={q.description}
+							description={q.info}
 							options={q.options}
-							bind:selectedOption={$formData[q.key]}
+							type={q.type}
+							bind:selectedOption={$formData[q.contextKey]}
+							on:change={(e) => {
+								updatePipelineValue(q.contextKey, e.detail.value, formData);
+							}}
 						/>
-
-						<!-- Buttons -->
-						<!-- <div class="mt-6 flex justify-between">
-							{#if $currentStep > 0}
-								<button on:click={prevStep} class="px-4 py-2 bg-gray-300 text-black rounded">
-									Back
-								</button>
-							{/if}
-							{#if $formData[q.key]}
-								<button
-									on:click={nextStep}
-									class="px-4 py-2 bg-blue-500 text-white rounded ml-auto"
-								>
-									Next
-								</button>
-							{/if}
-						</div> -->
 					</div>
-				</div>
-			{/if}
-		{/each}
+				{/if}
+			{/each}
+		{:else if $currentStep >= $visibleQuestions.length}
+			<!-- All steps complete -->
+			<div class="text-center text-lg font-semibold">✅ All questions answered!</div>
+		{/if}
 	</div>
-	{#if !showNext}
-		<button
-			type="button"
-			on:click={nextStep}
-			class="text-sm text-gray-400 text-center mt-4 animate-bounce">⬇️ Scroll to continue</button
-		>
-	{/if}
+
+	<!-- Buttons -->
+	<div class="w-full max-w-xl flex justify-between items-center mt-4">
+		{#if $currentStep > 0}
+			<button on:click={prevStep} class="px-4 py-2 rounded bg-gray-300 text-black">
+				⬅️ Back
+			</button>
+		{:else}
+			<div></div>
+		{/if}
+
+		{#if $formData[$visibleQuestions[$currentStep]?.contextKey]}
+			<button on:click={nextStep} class="px-4 py-2 rounded bg-blue-500 text-white ml-auto">
+				Next ➡️
+			</button>
+		{:else}
+			<button
+				disabled
+				class="px-4 py-2 rounded bg-blue-200 text-white ml-auto opacity-60 cursor-not-allowed"
+			>
+				Next ➡️
+			</button>
+		{/if}
+	</div>
 </div>
+
+<pre class="text-xs text-gray-500">
+	step: {$currentStep}
+	<!-- visible: {JSON.stringify($visibleQuestions, null, 2)} -->
+	data: {JSON.stringify($formData, null, 2)}
+</pre>
