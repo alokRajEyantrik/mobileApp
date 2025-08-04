@@ -5,6 +5,8 @@
 	import { visibleQuestions } from '$lib/stores/visibleQuestions';
 	import QuestionRadioForm from '$lib/components/QuestionRadioForm.svelte';
 	import { loadPipeline, updatePipelineValue } from '$lib/utils/updatePipeline';
+	import { activeFormData } from '$lib/stores/activeFormData';
+	import { currentPipelineKey } from '$lib/stores/userPipeline';
 
 	let container: HTMLDivElement;
 
@@ -41,6 +43,8 @@
 			await scrollToTop();
 		}
 	}
+
+	$: console.log('Current step:', $currentPipelineKey);
 </script>
 
 <div class="h-screen w-full flex flex-col justify-between items-center bg-gray-100 p-4">
@@ -98,4 +102,7 @@
 	step: {$currentStep}
 	<!-- visible: {JSON.stringify($visibleQuestions, null, 2)} -->
 	data: {JSON.stringify($formData, null, 2)}
+
+	<!-- active: {JSON.stringify(get(activeFormData), null, 2)} -->
+
 </pre>
