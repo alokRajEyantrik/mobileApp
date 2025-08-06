@@ -63,10 +63,7 @@
 						{ "label": "Drop-line Overdraft (DOD)", "value": "Drop-line OverDraft (DOD)" }
 					],
 					"showWhen": {
-						"in": [
-							{ "var": "q1_loanName" },
-							["Personal Loan", "Professional Loan", "Business Loan"]
-						]
+						"in": [{ "var": "loanName" }, ["Personal Loan", "Professional Loan", "Business Loan"]]
 					}
 				},
 				{
@@ -80,7 +77,7 @@
 					"description": "This includes all types of loans and credit limits you may have, such as personal loans, home loans, car loans, credit card loans (excluding monthly dues), gold loans, consumer durable loans, DODs, CCs, ODs, and any other ongoing liabilities.",
 					"showWhen": {
 						"in": [
-							{ "var": "q2_productType" },
+							{ "var": "productType" },
 							["Personal Loan", "Professional Loan", "Business Loan", "Drop-line OverDraft (DOD)"]
 						]
 					},
@@ -98,19 +95,18 @@
 					"required": true,
 					"question": "How you'd like to proceed with your loan?",
 					"description": "Tell us if you’re applying for a fresh loan or want to consolidate your current loans—fully or partially—with or without extra borrowing. If you only want debt consolidation, you can enter zero as the additional funds, later.",
-					"dependencies": ["q2_productType", "q3_haveAnyObligation"],
 					"showWhen": {
 						"and": [
 							{
 								"in": [
-									{ "var": "q2_productType" },
+									{ "var": "productType" },
 									["Personal Loan", "Professional Loan", "Business Loan"]
 								]
 							},
 							{
 								"or": [
 									{
-										"==": [{ "var": "q3_haveAnyObligation" }, "Yes"]
+										"==": [{ "var": "haveAnyObligation" }, "Yes"]
 									}
 								]
 							}
@@ -151,7 +147,12 @@
 					],
 					"errorMessage": {
 						"required": true,
-						"message": "We regret to inform you that we are unable to process you request at this time due to the following reasons: ITR for last 3 years not available."
+						"message": "We regret to inform you that we are unable to process your request at this time due to the following reasons: ITR for last 3 years not available."
+					},
+					"validation": {
+						"condition": {
+							"!=": [{ "var": "ITRAvailable" }, "Yes"]
+						}
 					}
 				},
 				{
@@ -173,11 +174,16 @@
 						}
 					],
 					"showWhen": {
-						"in": [{ "var": "q1_businessITR" }, ["Yes"]]
+						"in": [{ "var": "ITRAvailable" }, "Yes"]
 					},
 					"errorMessage": {
 						"required": true,
-						"message": "We regret to inform you that we are unable to process you request at this time due to the following reasons: You have not current Account,Overdraft (OD),Cash Credit (CC)"
+						"message": "We regret to inform you that we are unable to process your request at this time due to the following reasons: You do not have a current Account, Overdraft (OD), or Cash Credit (CC)."
+					},
+					"validation": {
+						"condition": {
+							"!=": [{ "var": "isCurrentAccount" }, "Yes"]
+						}
 					}
 				},
 				{
@@ -199,11 +205,16 @@
 						}
 					],
 					"showWhen": {
-						"in": [{ "var": "q2_currentAccount" }, ["Yes"]]
+						"in": [{ "var": "isCurrentAccount" }, "Yes"]
 					},
 					"errorMessage": {
 						"required": true,
 						"message": "We regret to inform you that we are unable to process you request at this time due to the following reasons: GST registration with current account not three year old."
+					},
+					"validation": {
+						"condition": {
+							"!=": [{ "var": "isGSTRegistered" }, "Yes"]
+						}
 					}
 				},
 				{
@@ -218,11 +229,36 @@
 					"required": true,
 					"question": "Please enter your GST Number ?",
 					"showWhen": {
-						"in": [{ "var": "q3_isGSTRegistered" }, ["Yes"]]
+						"in": [{ "var": "isGSTRegistered" }, "Yes"]
 					},
 					"errorMessage": {
-						"required": true,
-						"message": "We regret to inform you that we are unable to process you request at this time due to the following reasons: GST registration with current account not three year old."
+						"required": "GST Number is required",
+						"message": "We regret to inform you that we are unable to process your request at this time due to the following reasons: GST registration with current account not three years old.",
+						"stateNotServed": "We're not serve their"
+					},
+					"validation": {
+						"condition": {
+							"!=": [{ "var": "GSTNumber" }, ""]
+						},
+						"message": "validateGSTState"
+					}
+				},
+				{
+					"id": "q_state",
+					"bindsTo_template": "State",
+					"type": "text",
+					"uiGroup": "text_fields",
+					"uiMeta": {
+						"placeholder": "State (auto-filled from GST Number)",
+						"readonly": true
+					},
+					"question": "State",
+					"required": true,
+					"errorMessage": {
+						"required": "State is required"
+					},
+					"showWhen": {
+						"!=": [{ "var": "GSTNumber" }, ""]
 					}
 				},
 				{
