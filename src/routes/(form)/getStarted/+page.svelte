@@ -74,12 +74,11 @@
 
 	const validators = {
 		validateGSTState
-	};
-
-	/**
+	}; /**
 	 * Custom validator for GST Number.
 	 * Returns an error key string or null if valid.
 	 */
+
 	function validateGSTState(gstNumber) {
 		if (!gstNumber) return 'required';
 
@@ -95,9 +94,8 @@
 		if (!pincode_IN_Selected[stateName]) return 'stateNotServed';
 
 		return null; // Valid
-	}
+	} // When GST Number changes, auto-update the State field accordingly.
 
-	// When GST Number changes, auto-update the State field accordingly.
 	function updateStateFromGST(gstNumber) {
 		const errorKey = validateGSTState(gstNumber);
 		if (errorKey) {
@@ -160,9 +158,8 @@
 
 	function getValidationErrorMessage(question, answers) {
 		const key = resolveBindsTo(question, answers, selectedLoan);
-		const val = answers[key];
+		const val = answers[key]; // Suppress error if empty and currentPageIndex is 0 (initial page), i.e. no user interaction yet
 
-		// Suppress error if empty and currentPageIndex is 0 (initial page), i.e. no user interaction yet
 		if ((val === undefined || val === '' || val === null) && currentPageIndex === 0) {
 			return null;
 		}
@@ -268,10 +265,8 @@
 <div class="bg-black text-white p-4">
 	<h3>Debug: currentAnswers</h3>
 	<pre>{JSON.stringify(currentAnswers, null, 2)}</pre>
-
 	<h3>Debug: combinedAnswers</h3>
 	<pre>{JSON.stringify(combinedAnswers, null, 2)}</pre>
-
 	<h3>Debug: GST State Error</h3>
 	<pre>{$gstStateError}</pre>
 </div>

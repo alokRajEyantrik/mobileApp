@@ -208,7 +208,10 @@
 						}
 					],
 					"showWhen": {
-						"in": [{ "var": "isCurrentAccount" }, "Yes"]
+						"and": [
+							{ "!=": [{ "var": "isCurrentAccount" }, ""] },
+							{ "==": [{ "var": "isCurrentAccount" }, "Yes"] }
+						]
 					},
 					"errorMessage": {
 						"required": true,
@@ -232,7 +235,10 @@
 					"required": true,
 					"question": "Please enter your GST Number ?",
 					"showWhen": {
-						"in": [{ "var": "isGSTRegistered" }, "Yes"]
+						"and": [
+							{ "!=": [{ "var": "isGSTRegistered" }, ""] },
+							{ "==": [{ "var": "isGSTRegistered" }, "Yes"] }
+						]
 					},
 					"errorMessage": {
 						"required": "GST Number is required",
