@@ -6,6 +6,9 @@
 	import jsonLogic from 'json-logic-js';
 
 	let selectedLoan = '';
+	let currentPageIndex = 0;
+
+	let schema;
 
 	onMount(() => {
 		selectedLoan = ($loanData && $loanData.loanName) || '';
@@ -49,9 +52,9 @@
 		return resolvedKey;
 	}
 
-	let schema = preprocessSchemaBindings(formSchema, selectedLoan);
+	$: schema = preprocessSchemaBindings(formSchema, selectedLoan);
 
-	// Raw answers store
+	// Raw answers store for the selected loan
 	$: currentAnswers = $loanData[selectedLoan] ?? {};
 
 	// Build combinedAnswers with fully resolved keys for JsonLogic evaluation
@@ -76,17 +79,19 @@
 		...currentAnswers
 	};
 
-	$: visibleQuestions = schema.pages[0].questions.filter((q) =>
-		isQuestionVisible(q, combinedAnswers)
-	);
+	// Current page based on page index
+	$: currentPage = schema.pages[currentPageIndex];
 
-	// Update selectedLoan and reprocess schema on loan change
+	// Filter visible questions on the current page
+	$: visibleQuestions = currentPage.questions.filter((q) => isQuestionVisible(q, combinedAnswers));
+
 	function onLoanChange(event) {
 		selectedLoan = event.target.value || '';
 		schema = preprocessSchemaBindings(formSchema, selectedLoan);
+		currentPageIndex = 0; // Reset to first page on loan change
 	}
 
-	// Helper to resolve value if option.value is an object with a 'var' key
+	// Helper for options that have value as JSONLogic vars
 	function getOptionValue(value) {
 		if (typeof value === 'object' && value.var) {
 			return combinedAnswers[value.var] || '';
@@ -99,6 +104,7 @@
 		if (question.id === 'q1_loanName') {
 			selectedLoan = value;
 			schema = preprocessSchemaBindings(formSchema, selectedLoan);
+			currentPageIndex = 0;
 		}
 
 		const key = resolveBindsTo(question, combinedAnswers, selectedLoan);
@@ -111,13 +117,53 @@
 		});
 	}
 
+	// Visibility logic for questions
 	function isQuestionVisible(question, formData) {
 		if (!question.showWhen) return true;
 		return jsonLogic.apply(question.showWhen, formData);
 	}
+
+	// Navigation functions
+	function goNext() {
+		console.log("click hua hai next")
+		if (currentPageIndex < schema.pages.length - 1) {
+			currentPageIndex += 1;
+		}
+	}
+
+	function goPrev() {
+		if (currentPageIndex > 0) {
+			currentPageIndex -= 1;
+		}
+	}
+
+	// Check if all required questions are answered on current page (and visible)
+	function allRequiredAnswered() {
+		return currentPage.questions
+			.filter((q) => q.required && isQuestionVisible(q, combinedAnswers))
+			.every((q) => {
+				const key = resolveBindsTo(q, combinedAnswers, selectedLoan);
+				const val = currentAnswers[key];
+				return val !== undefined && val !== '' && val !== null;
+			});
+	}
+
+	// Enable Next button if conditions allow
+	$: isNextEnabled = currentPage.nextButtonVisibility
+		? currentPage.nextButtonVisibility.mode.includes('allRequiredAnswered') && allRequiredAnswered()
+		: true;
 </script>
 
-{#each visibleQuestions as question}
+<!-- Dropdown for selecting loan if needed -->
+<select on:change={onLoanChange} bind:value={selectedLoan}>
+	<option value="">Select a Loan</option>
+	{#each Object.keys($loanData) as loan}
+		<option value={loan}>{loan}</option>
+	{/each}
+</select>
+
+<!-- Render visible questions of current page -->
+{#each visibleQuestions as question (question.id)}
 	<div style="margin-bottom: 1rem;" class="flex flex-col gap-2">
 		<label for={question.id}>{question.question}</label>
 
@@ -148,8 +194,20 @@
 	</div>
 {/each}
 
+<!-- Navigation buttons -->
+<div style="margin-top: 1rem;">
+	{#if currentPageIndex > 0}
+		<button on:click={goPrev}>Previous</button>
+	{/if}
+
+	{#if currentPageIndex < schema.pages.length - 1}
+		<button class="bg-green-400" on:click={goNext} disabled={!isNextEnabled}>Next</button>
+	{/if}
+</div>
+
 <hr />
 
+<!-- Debug info -->
 <div class="bg-black text-white p-4">
 	<h3>Debug: currentAnswers</h3>
 	<pre>{JSON.stringify(currentAnswers, null, 2)}</pre>
