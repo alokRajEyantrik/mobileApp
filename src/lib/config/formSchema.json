@@ -174,7 +174,10 @@
 						}
 					],
 					"showWhen": {
-						"in": [{ "var": "ITRAvailable" }, "Yes"]
+						"and": [
+							{ "!=": [{ "var": "ITRAvailable" }, ""] },
+							{ "==": [{ "var": "ITRAvailable" }, "Yes"] }
+						]
 					},
 					"errorMessage": {
 						"required": true,
@@ -233,34 +236,21 @@
 					},
 					"errorMessage": {
 						"required": "GST Number is required",
+						"lengthError": "GST Number must be exactly 15 characters long.",
 						"message": "We regret to inform you that we are unable to process your request at this time due to the following reasons: GST registration with current account not three years old.",
 						"stateNotServed": "We're not serve their"
 					},
 					"validation": {
 						"condition": {
-							"!=": [{ "var": "GSTNumber" }, ""]
+							"or": [
+								{ "==": [{ "var": "GSTNumber" }, ""] },
+								{ "!=": [{ "var": "GSTNumber.length" }, 15] }
+							]
 						},
 						"message": "validateGSTState"
 					}
 				},
-				{
-					"id": "q_state",
-					"bindsTo_template": "State",
-					"type": "text",
-					"uiGroup": "text_fields",
-					"uiMeta": {
-						"placeholder": "State (auto-filled from GST Number)",
-						"readonly": true
-					},
-					"question": "State",
-					"required": true,
-					"errorMessage": {
-						"required": "State is required"
-					},
-					"showWhen": {
-						"!=": [{ "var": "GSTNumber" }, ""]
-					}
-				},
+
 				{
 					"id": "q5_isNRI",
 					"bindsTo_template": "isNRI",
@@ -280,11 +270,55 @@
 						}
 					],
 					"showWhen": {
-						"in": [{ "var": "q4_GSTNumber" }, [""]]
+						"!=": [{ "var": "GSTNumber" }, ""]
 					},
 					"errorMessage": {
 						"required": true,
 						"message": "We regret to inform you that we are unable to process you request at this time due to the following reasons: GST registration with current account not three year old."
+					},
+					"validation": {
+						"condition": {
+							"in": [{ "var": "isNRI" }, "Yes"]
+						},
+						"message": "validateisNRI"
+					}
+				}
+			]
+		},
+		{
+			"id": "locationPage",
+			"title": "Non-Collateral Loan Details",
+			"nextButtonVisibility": { "mode": ["allRequiredAnswered"] },
+			"questions": [
+				{
+					"id": "q_state",
+					"bindsTo_template": "State",
+					"contextKey": "State",
+					"type": "text",
+					"uiGroup": "text_fields",
+					"uiMeta": {
+						"placeholder": "State (auto-filled from GST Number)",
+						"readonly": true
+					},
+					"question": "State",
+					"required": true,
+					"showWhen": {
+						"in": [{ "var": "isNRI" }, "No"]
+					}
+				},
+				{
+					"id": "q_city",
+					"bindsTo_template": "City",
+					"contextKey": "City",
+					"type": "text",
+					"uiGroup": "text_fields",
+					"uiMeta": {
+						"placeholder": "City "
+					},
+					"question": "City",
+					"required": true,
+					"showWhen": {
+						"!=": [{ "var": "State" }, ""]
 					}
 				}
 			]
